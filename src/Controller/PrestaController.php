@@ -27,9 +27,14 @@ class PrestaController extends AbstractController
         
         $list = $userOpenHoursRepository->getOpenHoursByDayAndUser($data->userId, $data->date);
 
-        dd($list);
+        $tab = [];
+        foreach($list as $row){
+            $tab[] = [
+                'start_hours' => $row->getOpenHours()->getStartHours()->format('H:i'),
+                'end_hours' => $row->getOpenHours()->getEndHours()->format('H:i')
+            ];
+        }
 
-
-        return new JsonResponse();
+        return new JsonResponse($tab);
     }
 }

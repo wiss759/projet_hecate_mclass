@@ -39,8 +39,22 @@
                         userId:{{ presta.id }}
                     })
                 })
-                .then(function(header){})
-                .then(function(body){})
+                .then(function(header){
+                    return header.json();
+                })
+                .then(function(body){
+                    
+                    let string = '';
+
+                    body.forEach(val => {
+                        console.log(val);
+                        string += '<li>' + val.start_hours + ' - ' + val.end_hours + '</li>';
+                    })
+
+                    document.getElementById('listCreneau').innerHTML = string;
+
+
+                })
             }
         });
         calendar.render();
@@ -58,7 +72,7 @@
         <div id='calendar'></div>
     </div>
     <div class="col-6">
-        <ul>
+        <ul id="listCreneau">
             <li>kldjgmlfh</li>
             <li>kldjgmlfh</li>
         </ul>
