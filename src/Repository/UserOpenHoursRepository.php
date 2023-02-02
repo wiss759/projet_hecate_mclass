@@ -39,6 +39,16 @@ class UserOpenHoursRepository extends ServiceEntityRepository
         }
     }
 
+    public function getOpenHoursByDayAndUser($userId, $date){
+        $query = $this->createQueryBuilder('u')->join('u.Open_hours', 'o');
+        $query->where('u.user_id = :userId')->setParameter('userId', $userId);
+        $query->andWhere("DATE_FORMAT(o.start_hours, '%Y-%m-%d') = :date")->setParameter('date', $date.' 08:00:00');
+
+        $result = $query->getQuery()->getResult();
+
+        return $result;
+    }
+
 //    /**
 //     * @return UserOpenHours[] Returns an array of UserOpenHours objects
 //     */

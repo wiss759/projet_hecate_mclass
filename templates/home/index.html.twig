@@ -1,16 +1,54 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
+{% block title %}Hello HomeController!
+{% endblock %}
 
 {% block body %}
 
-<div class="row">
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Bienvenue</h5>
-            <p class="card-text">Bienvenue dans notre application de réservation de créneau horaire ! Nous sommes là pour vous aider à planifier votre temps de manière efficace et pratique. Avec notre interface intuitive, réserver votre prochain rendez-vous n'a jamais été aussi simple. Que ce soit pour un rendez-vous chez le médecin, un cours de sport ou tout autre engagement, notre application est la solution idéale pour vous organiser en un rien de temps.</p>
-        </div>
-    </div>
-</div>
+	<div class="row">
+		<div class="card">
+			<div class="card-body">
+				<h5 class="card-title">Bienvenue</h5>
+				<p class="card-text">Bienvenue dans notre application de réservation de créneau horaire ! Nous sommes là pour vous aider à planifier votre temps de manière efficace et pratique. Avec notre interface intuitive, réserver votre prochain rendez-vous n'a jamais été aussi simple. Que ce soit pour un rendez-vous chez le médecin, un cours de sport ou tout autre engagement, notre application est la solution idéale pour vous organiser en un rien de temps.</p>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<ul class="nav nav-tabs d-none d-lg-flex" id="myTab" role="tablist">
+			{% set i = 0 %}
+			{% for cat in listCategory %}
+				<li class="nav-item" role="presentation">
+					{% if i == 0 %}
+						<button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#{{ cat.name }}-tab-pane" type="button" role="tab" aria-controls="{{ cat.name }}-tab-pane" aria-selected="true">{{ cat.name }}</button>
+					{% else %}
+						<button class="nav-link" id="home-tab" data-bs-toggle="tab" data-bs-target="#{{ cat.name }}-tab-pane" type="button" role="tab" aria-controls="{{ cat.name }}-tab-pane" aria-selected="true">{{ cat.name }}</button>
+					{% endif %}
+				</li>
+				{% set i = i + 1 %}
+			{% endfor %}
+		</ul>
+		<div class="tab-content accordion" id="myTabContent">
+			{% set i = 0 %}
+			{% for cat in listCategory %}
+				{% if i == 0 %}
+					<div class="tab-pane fade show accordion-item active" id="{{ cat.name }}-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+					{% else %}
+						<div class="tab-pane fade show accordion-item" id="{{ cat.name }}-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+						{% endif %}
+						{% for prest in cat.user %}
+							<div class="card" style="width: 18rem;">
+								<img src="..." class="card-img-top" alt="...">
+								<div class="card-body">
+									<h5 class="card-title">{{ prest.firstname }} {{ prest.lastname }}</h5>
+									<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+									<a href="{{ path('app_presta', {'user':prest.id}) }}" class="btn btn-primary">Go somewhere</a>
+								</div>
+							</div>
+						{% endfor %}
+					</div>
+					{% set i = i + 1 %}
+				{% endfor %}
+			</div>
+		</div>
 
-{% endblock %}
+	{% endblock %}

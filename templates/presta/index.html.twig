@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello PrestaController!{% endblock %}
+
+{% block javascripts %}
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.1/index.global.min.js'></script>
+<script>
+
+    let url = '{{ path('app_user_presta_savehours') }}';
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            selectable: true,
+            locale: 'fr',
+            firstDay: 1,
+            initialView: 'dayGridMonth',
+            displayEventEnd:true,
+            headerToolbar: {
+                left: 'prev,next',
+                center: 'title',
+                right: ''
+            },
+            buttonText: {
+                today: 'Aujourd\'hui',
+                month: 'mois',
+                week: 'semaine',
+                list: 'Liste'
+            },
+            dateClick: function(info) {
+                fetch('{{ path('app_presta_hours') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        date: info.dateStr,
+                        userId:{{ presta.id }}
+                    })
+                })
+                .then(function(header){})
+                .then(function(body){})
+            }
+        });
+        calendar.render();
+    });
+
+</script>
+{% endblock %}
+
+{% block body %}
+<h1>Ficher prestataire : {{ presta.firstname }} {{ presta.lastname }}</h1><
+<hr>
+<br>
+<div class="row">
+    <div class="col-6">
+        <div id='calendar'></div>
+    </div>
+    <div class="col-6">
+        <ul>
+            <li>kldjgmlfh</li>
+            <li>kldjgmlfh</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
