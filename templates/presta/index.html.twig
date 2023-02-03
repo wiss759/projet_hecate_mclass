@@ -36,7 +36,8 @@
                     },
                     body: JSON.stringify({
                         date: info.dateStr,
-                        userId:{{ presta.id }}
+                        userId:{{ presta.id }},
+                        categoryId:{{category.id}}
                     })
                 })
                 .then(function(header){
@@ -47,8 +48,12 @@
                     let string = '';
 
                     body.forEach(val => {
+                        let mine = "";
+                        if(val.mine){
+                            mine = " - Mon rendez vous";
+                        }
                         if(val.isBooked){
-                            string += "<li style=\"color:red\">" + val.start_hours + " - " + val.end_hours + " (déjà reservé)</li>";
+                            string += "<li style=\"color:red\">" + val.start_hours + " - " + val.end_hours + " (déjà reservé)" + mine + "</li>";
                         }else{
                             string += "<li><a href=\"/reservation/" + val.id + "/{{ presta.id }}\">" + val.start_hours + " - " + val.end_hours + "</a></li>";
                         }
@@ -63,21 +68,23 @@
                 {% set i = 0 %}
                 {% set tabDay = [] %}
                 {% for event in presta.userOpenHours %}
-                    {% if i != 0 %}
-                    ,
-                    {% endif %}
-                    {
-                        start:'{{ event.OpenHours.startHours|date('Y-m-d')}}',
-                        end:'{{ event.OpenHours.endHours|date('Y-m-d')}}',
-                        {% if event.OpenHours.startHours|date('Y-m-d') not in tabDay %}
-                            display: 'background',
-                            color: 'green'
-                        {% else %}
-                            display: 'none'
+                    {% if event.category.id == category.id %}
+                        {% if i != 0 %}
+                        ,
                         {% endif %}
-                    }
-                    {% set tabDay = tabDay|merge([event.OpenHours.startHours|date('Y-m-d')]) %}
-                    {% set i = i + 1 %}
+                        {
+                            start:'{{ event.OpenHours.startHours|date('Y-m-d')}}',
+                            end:'{{ event.OpenHours.endHours|date('Y-m-d')}}',
+                            {% if event.OpenHours.startHours|date('Y-m-d') not in tabDay %}
+                                display: 'background',
+                                color: 'green'
+                            {% else %}
+                                display: 'none'
+                            {% endif %}
+                        }
+                        {% set tabDay = tabDay|merge([event.OpenHours.startHours|date('Y-m-d')]) %}
+                        {% set i = i + 1 %}
+                    {% endif %}
                 {% endfor %}
             ]
         });

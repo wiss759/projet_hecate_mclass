@@ -100,7 +100,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/user_presta_savehours', name: 'app_user_presta_savehours')]
-    public function prestasavehours(Request $request, OpenHoursRepository $openHoursRepository, UserOpenHoursRepository $userOpenHoursRepository): Response
+    public function prestasavehours(Request $request, OpenHoursRepository $openHoursRepository, UserOpenHoursRepository $userOpenHoursRepository, CategoryRepository $categoryRepository): Response
     {
         if(isset(json_decode($request->getContent())->date)){
             $date = json_decode($request->getContent())->date;
@@ -130,6 +130,8 @@ class UserController extends AbstractController
             $userOpenHours->setOpenHours($openHours);
             $userOpenHours->setUserId($this->getUser());
             $userOpenHours->setIsBooked(0);
+            $category = $categoryRepository->findOneById($request->request->all()['hours_open']['category']);
+            $userOpenHours->setCategory($category);
 
             $userOpenHoursRepository->save($userOpenHours, true);
 

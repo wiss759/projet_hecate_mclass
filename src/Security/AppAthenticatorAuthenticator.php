@@ -51,13 +51,14 @@ class AppAthenticatorAuthenticator extends AbstractLoginFormAuthenticator
 
         //si il existe une variable de redirection de reservation
         $session = $this->_requestStack->getSession();
-        $id = 0;
-        if(!empty($session->get('TEMP_PAGE_RESA'))){
-            $id = $session->get('TEMP_PAGE_RESA');
+        $idOpenHours = $idPresta = 0;
+        if(!empty($session->get('TEMP_SESION_HOURS'))){
+            $idOpenHours = $session->get('TEMP_SESION_HOURS');
+            $idPresta = $session->get('TEMP_SESSION_PRESTA');
         }
         
-        if(0 != $id){
-            return new RedirectResponse($this->urlGenerator->generate('app_presta_reservation', ['id' => $id]));
+        if(0 != $idOpenHours){
+            return new RedirectResponse($this->urlGenerator->generate('app_presta_reservation', ['openHours' => $idOpenHours, 'presta' => $idPresta]));
         }else{
             //sinon redirection habituellle
             return new RedirectResponse($this->urlGenerator->generate('app_user'));

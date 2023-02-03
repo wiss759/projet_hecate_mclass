@@ -27,6 +27,10 @@ class UserOpenHours
     #[ORM\ManyToOne(inversedBy: 'userOpenHoursBooked')]
     private ?User $user_has_booked = null;
 
+    #[ORM\ManyToOne(inversedBy: 'userOpenHours')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Category $category = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -76,6 +80,18 @@ class UserOpenHours
     public function setUserHasBooked(?User $user_has_booked): self
     {
         $this->user_has_booked = $user_has_booked;
+
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): self
+    {
+        $this->category = $category;
 
         return $this;
     }

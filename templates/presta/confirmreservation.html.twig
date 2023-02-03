@@ -5,7 +5,7 @@
 
 
 {% block metas %}
-<meta http-equiv="refresh" content="10; url=/">
+<!--<meta http-equiv="refresh" content="10; url=/">-->
 {% endblock %}
 
 {% block javascripts %}
@@ -17,9 +17,21 @@
 	<hr>
 	<br>
 	<div class="row">
-		<div class="col-12">
-			BRAVO reservation confirmé
+		<div class="col-6">
+			<h1>BRAVO reservation confirmé</h1>
+			Vous avez pris rendez-vous avec :
+			{{ presta.firstname }}
+			{{ presta.lastname }}<br/>
+			Pour une prestation de : {{ userOpenHours.category.name }}<br />
+			Le :
+			{{ openHours.startHours|date('d/m/Y') }}<br/>
+			De :
+			{{ openHours.startHours|date('H:i:s') }}<br/>
+			A :
+			{{ openHours.endHours|date('H:i:s') }}
 		</div>
-       
+		<div class="col-6">
+			<a target="_blank" href="{{ path('app_presta_pdfreservation', {'openHours':openHours.id, 'presta':presta.id}) }}" class="btn btn-info">Bon de réservation</a>
+		</div>
 	</div>
 {% endblock %}

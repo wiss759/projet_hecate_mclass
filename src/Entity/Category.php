@@ -21,9 +21,13 @@ class Category
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'categories')]
     private Collection $user;
 
+    #[ORM\OneToMany(mappedBy: 'category', targetEntity: UserOpenHours::class)]
+    private Collection $userOpenHours;
+
     public function __construct()
     {
         $this->user = new ArrayCollection();
+        $this->userOpenHours = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -70,5 +74,35 @@ class Category
     public function __toString()
     {
         return $this->name;
+    }
+
+    /**
+     * @return Collection<int, UserOpenHours>
+     */
+    public function getUserOpenHours(): Collection
+    {
+        return $this->userOpenHours;
+    }
+
+    public function addUserOpenHour(UserOpenHours $userOpenHour): self
+    {
+        if (!$this->userOpenHours->contains($userOpenHour)) {
+            $this->userOpenHours->add($userOpenHour);
+            $userOpenHour->setCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserOpenHour(UserOpenHours $userOpenHour): self
+    {
+        if ($this->userOpenHours->removeElement($userOpenHour)) {
+            // set the owning side to null (unless already changed)
+            if ($userOpenHour->getCategory() === $this) {
+                $userOpenHour->setCategory(null);
+            }
+        }
+
+        return $this;
     }
 }

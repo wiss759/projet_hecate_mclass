@@ -16,12 +16,19 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <a href="{{path('app_home')}}">Accueil</a>
-                    {% if not app.user %}
-                    <a href="{{ path('app_login') }}">Authentification</a> - <a href="{{ path('app_register') }}">Inscription</a>
-                    {% else %}
-                    Bienvenue {{ app.user.firstname }} {{ app.user.lastname }} <a href="{{ path('app_logout') }}">Deconnexion</a>
-                    {% endif %}
+                    <div class="row">
+                        <div class="float-left col-6">
+                            <a href="{{path('app_home')}}">Accueil</a>
+                        </div>
+                        <div class="float-right col-6" align="right">
+                            
+                            {% if not app.user %}
+                            <a href="{{ path('app_login') }}">Authentification</a> - <a href="{{ path('app_register') }}">Inscription</a>
+                            {% else %}
+                            Bienvenue {{ app.user.firstname }} {{ app.user.lastname }} - <a href="{{path('app_user')}}">Mon profil</a> - <a href="{{ path('app_logout') }}">Deconnexion</a>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
             {% block body %}{% endblock %}
