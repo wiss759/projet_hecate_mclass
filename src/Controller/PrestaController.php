@@ -5,8 +5,10 @@ namespace App\Controller;
 use App\Entity\Category;
 use App\Entity\OpenHours;
 use App\Entity\User;
+use App\Entity\UserOpenHours;
 use App\Repository\UserOpenHoursRepository;
 use Fpdf\Fpdf;
+use PHPMailer\PHPMailer\PHPMailer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -130,5 +132,46 @@ class PrestaController extends AbstractController
 
         dd('ok');
 
+    }
+
+    #[Route('/annulation/{userOpenHours}', name: 'app_presta_annulation')]
+    public function annulation(UserOpenHours $userOpenHours, UserOpenHoursRepository $userOpenHoursRepository): Response
+    {
+        $userOpenHours->setIsBooked(false);
+        $userOpenHours->setUserHasBooked(null);
+
+        $userOpenHoursRepository->save($userOpenHours, true);
+
+        /*===============PARTIE MAIL==============*/
+        $mail = new PHPMailer();
+        $mail->IsSMTP();
+        $mail->Mailer = "smtp";
+
+        $mail->SMTPDebug  = 1;  
+        $mail->SMTPAuth   = TRUE;
+        $mail->SMTPSecure = "tls";
+        $mail->Port       = 587;
+        $mail->Host       = "smtp.gmail.com";
+        $mail->Username   = "inthebox.app@gmail.com";
+        $mail->Password   = "etxxpalgzviiwrrj";
+
+        $mail->IsHTML(true);
+        $mail->AddAddress($this->getUser()->getEmail(), $this->getUser()->getFirstname().' '.$this->getUser()->getLastname());
+        $mail->SetFrom("inthebox.app@gmail.com", "INTHEBOX");
+        $mail->Subject = "Annulation de rendez vous";
+        $content = "<b>Confirmation de l'annulation de votre rendez vous.</b>";
+
+        $mail->MsgHTML($content); 
+        if(!$mail->Send()) {
+            echo "Error while sending Email.";
+            var_dump($mail);
+        } else {
+            echo "Email sent successfully";
+        }
+
+        /*===============PARTIE MAIL==============*/
+
+        return $this->redirectToRoute('app_user');
+        
     }
 }
