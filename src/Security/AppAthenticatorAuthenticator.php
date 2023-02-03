@@ -4,6 +4,7 @@ namespace App\Security;
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -20,9 +21,11 @@ class AppAthenticatorAuthenticator extends AbstractLoginFormAuthenticator
     use TargetPathTrait;
 
     public const LOGIN_ROUTE = 'app_login';
+    private $_requestStack;
 
-    public function __construct(private UrlGeneratorInterface $urlGenerator)
+    public function __construct(private UrlGeneratorInterface $urlGenerator, RequestStack $requestStack)
     {
+        $this->_requestStack = $requestStack;
     }
 
     public function authenticate(Request $request): Passport
@@ -46,9 +49,20 @@ class AppAthenticatorAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        // For example:
-       return new RedirectResponse($this->urlGenerator->generate('app_user'));
-         // throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
+        //si il existe une variable de redirection de reservation
+        $session = $this->_requestStack->getSession();
+        $id = 0;
+        if(!empty($session->get('TEMP_PAGE_RESA'))){
+            $id = $session->get('TEMP_PAGE_RESA');
+        }
+        
+        if(0 != $id){
+            return new RedirectResponse($this->urlGenerator->generate('app_presta_reservation', ['id' => $id]));
+        }else{
+            //sinon redirection habituellle
+            return new RedirectResponse($this->urlGenerator->generate('app_user'));
+            // throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
+        }
     }
 
     protected function getLoginUrl(Request $request): string

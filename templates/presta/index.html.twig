@@ -3,7 +3,7 @@
 {% block title %}Hello PrestaController!{% endblock %}
 
 {% block javascripts %}
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.1/index.global.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.1/index.global.js'></script>
 <script>
 
     let url = '{{ path('app_user_presta_savehours') }}';
@@ -48,14 +48,35 @@
 
                     body.forEach(val => {
                         console.log(val);
-                        string += '<li>' + val.start_hours + ' - ' + val.end_hours + '</li>';
+                        string += "<li><a href=\"/reservation/" + val.id + "\">" + val.start_hours + " - " + val.end_hours + "</a></li>";
                     })
 
                     document.getElementById('listCreneau').innerHTML = string;
 
 
                 })
-            }
+            },
+            events:[
+                {% set i = 0 %}
+                {% set tabDay = [] %}
+                {% for event in presta.userOpenHours %}
+                    {% if i != 0 %}
+                    ,
+                    {% endif %}
+                    {
+                        start:'{{ event.OpenHours.startHours|date('Y-m-d')}}',
+                        end:'{{ event.OpenHours.endHours|date('Y-m-d')}}',
+                        {% if event.OpenHours.startHours|date('Y-m-d') not in tabDay %}
+                            display: 'background',
+                            color: 'green'
+                        {% else %}
+                            display: 'none'
+                        {% endif %}
+                    }
+                    {% set tabDay = tabDay|merge([event.OpenHours.startHours|date('Y-m-d')]) %}
+                    {% set i = i + 1 %}
+                {% endfor %}
+            ]
         });
         calendar.render();
     });
@@ -64,7 +85,7 @@
 {% endblock %}
 
 {% block body %}
-<h1>Ficher prestataire : {{ presta.firstname }} {{ presta.lastname }}</h1><
+<h1>Ficher prestataire : {{ presta.firstname }} {{ presta.lastname }}</h1>
 <hr>
 <br>
 <div class="row">
@@ -73,8 +94,7 @@
     </div>
     <div class="col-6">
         <ul id="listCreneau">
-            <li>kldjgmlfh</li>
-            <li>kldjgmlfh</li>
+            
         </ul>
     </div>
 </div>
