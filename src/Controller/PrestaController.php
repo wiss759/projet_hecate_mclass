@@ -37,7 +37,7 @@ class PrestaController extends AbstractController
 
             $mine = false;
             if(null != $this->getUser()){
-                if($row->getUserHasBooked()->getId() == $this->getUser()->getId()){
+                if(!empty($row->getUserHasBooked()) && $row->getUserHasBooked()->getId() == $this->getUser()->getId()){
                     $mine = true;
                 }
             }
