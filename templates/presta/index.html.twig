@@ -47,8 +47,11 @@
                     let string = '';
 
                     body.forEach(val => {
-                        console.log(val);
-                        string += "<li><a href=\"/reservation/" + val.id + "\">" + val.start_hours + " - " + val.end_hours + "</a></li>";
+                        if(val.isBooked){
+                            string += "<li style=\"color:red\">" + val.start_hours + " - " + val.end_hours + " (déjà reservé)</li>";
+                        }else{
+                            string += "<li><a href=\"/reservation/" + val.id + "/{{ presta.id }}\">" + val.start_hours + " - " + val.end_hours + "</a></li>";
+                        }
                     })
 
                     document.getElementById('listCreneau').innerHTML = string;

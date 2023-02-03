@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\OpenHours;
 use App\Entity\User;
 use App\Repository\UserOpenHoursRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,21 +34,22 @@ class PrestaController extends AbstractController
             $tab[] = [
                 'id' => $row->getOpenHours()->getId(),
                 'start_hours' => $row->getOpenHours()->getStartHours()->format('H:i'),
-                'end_hours' => $row->getOpenHours()->getEndHours()->format('H:i')
+                'end_hours' => $row->getOpenHours()->getEndHours()->format('H:i'),
+                'isBooked' => $row->isIsBooked()
             ];
         }
 
         return new JsonResponse($tab);
     }
 
-    #[Route('/reservation/{id}', name: 'app_presta_reservation')]
-    public function reservation($id, RequestStack $requestStack): Response
+    #[Route('/reservation/{openHours}/{presta}', name: 'app_presta_reservation')]
+    public function reservation(OpenHours $openHours, User $presta, RequestStack $requestStack): Response
     {
         $session = $requestStack->getSession();
 
         if(!$this->getuser()){
 
-            $session->set('TEMP_PAGE_RESA', $id);
+            $session->set('TEMP_PAGE_RESA', $openHours->getId());
 
             $this->addFlash('danger', 'Vous devez etre connecter pour pouvoir réserver un creneau');
             return $this->redirectToRoute('app_login');
@@ -55,14 +57,38 @@ class PrestaController extends AbstractController
         }else{
 
             if(!empty($session->get('TEMP_PAGE_RESA'))){
-                $id = $session->remove('TEMP_PAGE_RESA');
+                $session->remove('TEMP_PAGE_RESA');
             }
 
         }
 
-
         return $this->render('presta/reservation.html.twig', [
-            
+            'presta' => $presta,
+            'openHours' => $openHours
+        ]);
+    }
+
+    #[Route('/confirmreservation/{openHours}/{presta}', name: 'app_presta_confirmreservation')]
+    public function confirmreservation(OpenHours $openHours, User $presta, UserOpenHoursRepository $userOpenHoursRepository): Response
+    {
+        //test pour savoir si le creneau n'est pas déjà reservé
+        foreach($openHours->getUserOpenHours() as $row){
+            if($row->isIsBooked()){
+                $this->addFlash('danger', 'Ce creneau vient d\'etre réserver, merci d\'en choisir un autre.');
+                return $this->redirectToRoute('app_presta', ['user' => $presta->getId()]);
+            }
+            $userOpenHours = $row;
+        }
+
+        //enregistrement de la reservation
+        $userOpenHours->setIsBooked(true);
+        $userOpenHours->setUserHasBooked($this->getUser());
+        
+        $userOpenHoursRepository->save($userOpenHours, true);
+
+        return $this->render('presta/confirmreservation.html.twig', [
+            'presta' => $presta,
+            'openHours' => $openHours
         ]);
     }
 }

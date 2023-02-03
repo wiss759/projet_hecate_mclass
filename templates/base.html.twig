@@ -9,13 +9,14 @@
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
         {% endblock %}
-
+        {% block metas %}{% endblock %}
         <script src="/assets/js/toasts.js"></script>
     </head>
     <body>
         <div class="container">
             <div class="row">
                 <div class="col-12">
+                    <a href="{{path('app_home')}}">Accueil</a>
                     {% if not app.user %}
                     <a href="{{ path('app_login') }}">Authentification</a> - <a href="{{ path('app_register') }}">Inscription</a>
                     {% else %}
