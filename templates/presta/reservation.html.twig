@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello PrestaController!
+{% endblock %}
+
+{% block body %}
+	<h1>Reservation</h1>
+	<hr>
+	<br>
+	<div class="row">
+		<div class="col-12">
+			Vous souhaitez prendre rendez-vous avec :
+			{{ presta.firstname }}
+			{{ presta.lastname }}<br/>
+			Pour une prestation de : {{ userOpenHours.category.name }}<br />
+			Le :
+			{{ openHours.startHours|date('d/m/Y') }}<br/>
+			De :
+			{{ openHours.startHours|date('H:i:s') }}<br/>
+			A :
+			{{ openHours.endHours|date('H:i:s') }}
+		</div>
+        <div class="col-6">
+            <a href="{{ path('app_presta_confirmreservation', {'openHours':openHours.id, 'presta':presta.id}) }}" class="col-12 btn btn-success">Confirmer</a>
+        </div>
+        <div class="col-6">
+            <a href="{{ path('app_home') }}" class="col-12 btn btn-danger">Refuser</a>
+        </div>
+	</div>
+{% endblock %}

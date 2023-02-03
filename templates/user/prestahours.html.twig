@@ -57,7 +57,7 @@
                     ,
                     {% endif %}
                     {
-                        'title':'Creneau',
+                        'title':'{{ event.category.name }}',
                         'start':'{{ event.OpenHours.startHours|date('Y-m-d')}}T{{ event.OpenHours.startHours|date('H:i:s') }}',
                         'end':'{{ event.OpenHours.endHours|date('Y-m-d')}}T{{ event.OpenHours.endHours|date('H:i:s') }}'
                     }

@@ -2,9 +2,28 @@
 
 {% block title %}Hello UserController!{% endblock %}
 
+{% block stylesheets %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.jqueryui.min.css">
+{% endblock %}
+
+{% block javascripts %}
+<script
+  src="https://code.jquery.com/jquery-3.6.3.js"
+  integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
+  crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        let table = new DataTable('#datatable');
+    });
+</script>
+{% endblock %}
+
+
 {% block body %}
 <div class="example-wrapper">
-    <h1>Bienvenu sur votre profil</h1>
+<h1>Bienvenu sur votre profil</h1>
     <div class="row">
         <div class="col-6">
             {{ form(form) }}
@@ -16,6 +35,31 @@
                     <a href="{{ path('app_user_presta_hours') }}" class="btn btn-primary">Déclarer des horaires</a>
                 {% endif %}
             {% endif %}
+        </div>
+        <div class="col-12">
+            <h1>Liste de mes rendez-vous</h1>
+            <table id="datatable">
+                <thead>
+                    <tr>
+                        <th>Prestation</th>
+                        <th>Jour</th>
+                        <th>Heure debut</th>
+                        <th>Heure fin</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for event in app.user.userOpenHoursBooked %}
+                    <tr>
+                        <td>{{ event.category.name }}</td>
+                        <td>{{ event.openHours.startHours|date('d/m/Y') }}</td>
+                        <td>{{ event.openHours.startHours|date('H:i') }}</td>
+                        <td>{{ event.openHours.endHours|date('H:i') }}</td>
+                        <td><a href="{{ path('app_presta_annulation', {'userOpenHours':event.id}) }}">Annuler le rendez-vous</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 

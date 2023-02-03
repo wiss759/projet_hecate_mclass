@@ -3,7 +3,7 @@
 {% block title %}Hello PrestaController!{% endblock %}
 
 {% block javascripts %}
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.1/index.global.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.1/index.global.js'></script>
 <script>
 
     let url = '{{ path('app_user_presta_savehours') }}';
@@ -36,7 +36,8 @@
                     },
                     body: JSON.stringify({
                         date: info.dateStr,
-                        userId:{{ presta.id }}
+                        userId:{{ presta.id }},
+                        categoryId:{{category.id}}
                     })
                 })
                 .then(function(header){
@@ -47,15 +48,45 @@
                     let string = '';
 
                     body.forEach(val => {
-                        console.log(val);
-                        string += '<li>' + val.start_hours + ' - ' + val.end_hours + '</li>';
+                        let mine = "";
+                        if(val.mine){
+                            mine = " - Mon rendez vous";
+                        }
+                        if(val.isBooked){
+                            string += "<li style=\"color:red\">" + val.start_hours + " - " + val.end_hours + " (déjà reservé)" + mine + "</li>";
+                        }else{
+                            string += "<li><a href=\"/reservation/" + val.id + "/{{ presta.id }}\">" + val.start_hours + " - " + val.end_hours + "</a></li>";
+                        }
                     })
 
                     document.getElementById('listCreneau').innerHTML = string;
 
 
                 })
-            }
+            },
+            events:[
+                {% set i = 0 %}
+                {% set tabDay = [] %}
+                {% for event in presta.userOpenHours %}
+                    {% if event.category.id == category.id %}
+                        {% if i != 0 %}
+                        ,
+                        {% endif %}
+                        {
+                            start:'{{ event.OpenHours.startHours|date('Y-m-d')}}',
+                            end:'{{ event.OpenHours.endHours|date('Y-m-d')}}',
+                            {% if event.OpenHours.startHours|date('Y-m-d') not in tabDay %}
+                                display: 'background',
+                                color: 'green'
+                            {% else %}
+                                display: 'none'
+                            {% endif %}
+                        }
+                        {% set tabDay = tabDay|merge([event.OpenHours.startHours|date('Y-m-d')]) %}
+                        {% set i = i + 1 %}
+                    {% endif %}
+                {% endfor %}
+            ]
         });
         calendar.render();
     });
@@ -64,7 +95,7 @@
 {% endblock %}
 
 {% block body %}
-<h1>Ficher prestataire : {{ presta.firstname }} {{ presta.lastname }}</h1><
+<h1>Ficher prestataire : {{ presta.firstname }} {{ presta.lastname }}</h1>
 <hr>
 <br>
 <div class="row">
@@ -73,8 +104,7 @@
     </div>
     <div class="col-6">
         <ul id="listCreneau">
-            <li>kldjgmlfh</li>
-            <li>kldjgmlfh</li>
+            
         </ul>
     </div>
 </div>
